@@ -1,0 +1,575 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Vishnu P H | Social Media Strategist</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;700;900&family=Rajdhani:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/js/all.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.9.1/chart.min.js"></script>
+    
+    <style>
+        :root {
+            --neon-blue: #00f3ff;
+            --neon-purple: #bc13fe;
+            --dark-bg: #05050a;
+            --glass: rgba(255, 255, 255, 0.05);
+        }
+
+        body {
+            background-color: var(--dark-bg);
+            color: #e0e0e0;
+            font-family: 'Rajdhani', sans-serif;
+            overflow-x: hidden;
+            cursor: crosshair;
+        }
+
+        h1, h2, h3, .tech-font {
+            font-family: 'Orbitron', sans-serif;
+        }
+
+        /* Cyberpunk Grid Background */
+        .bg-grid {
+            background-size: 40px 40px;
+            background-image: linear-gradient(to right, rgba(0, 243, 255, 0.05) 1px, transparent 1px),
+                              linear-gradient(to bottom, rgba(0, 243, 255, 0.05) 1px, transparent 1px);
+            animation: scrollGrid 20s linear infinite;
+        }
+
+        @keyframes scrollGrid {
+            0% { background-position: 0 0; }
+            100% { background-position: 40px 40px; }
+        }
+
+        /* Glassmorphism Cards */
+        .glass-card {
+            background: var(--glass);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(0, 243, 255, 0.1);
+            box-shadow: 0 4px 30px rgba(0, 0, 0, 0.5);
+            transition: all 0.4s ease;
+        }
+
+        .glass-card:hover {
+            border-color: var(--neon-blue);
+            box-shadow: 0 0 15px rgba(0, 243, 255, 0.3);
+            transform: translateY(-5px);
+        }
+
+        /* Neon Text Effects */
+        .neon-text {
+            text-shadow: 0 0 5px var(--neon-blue), 0 0 10px var(--neon-blue);
+        }
+        
+        .neon-purple {
+            text-shadow: 0 0 5px var(--neon-purple), 0 0 10px var(--neon-purple);
+        }
+
+        /* Glitch Effect Class */
+        .glitch {
+            position: relative;
+        }
+        
+        .glitch::before, .glitch::after {
+            content: attr(data-text);
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+        }
+        
+        .glitch::before {
+            left: 2px;
+            text-shadow: -1px 0 red;
+            clip: rect(24px, 550px, 90px, 0);
+            animation: glitch-anim-1 2.5s infinite linear alternate-reverse;
+        }
+        
+        .glitch::after {
+            left: -2px;
+            text-shadow: -1px 0 blue;
+            clip: rect(85px, 550px, 140px, 0);
+            animation: glitch-anim-2 3s infinite linear alternate-reverse;
+        }
+
+        @keyframes glitch-anim-1 {
+            0% { clip: rect(20px, 9999px, 15px, 0); }
+            20% { clip: rect(60px, 9999px, 10px, 0); }
+            100% { clip: rect(5px, 9999px, 80px, 0); }
+        }
+
+        @keyframes glitch-anim-2 {
+            0% { clip: rect(10px, 9999px, 80px, 0); }
+            20% { clip: rect(80px, 9999px, 10px, 0); }
+            100% { clip: rect(30px, 9999px, 50px, 0); }
+        }
+
+        /* Timeline Nodes */
+        .timeline-node {
+            position: relative;
+        }
+        .timeline-node::before {
+            content: '';
+            position: absolute;
+            left: -29px;
+            top: 5px;
+            width: 16px;
+            height: 16px;
+            background: var(--dark-bg);
+            border: 2px solid var(--neon-blue);
+            border-radius: 50%;
+            z-index: 10;
+            transition: 0.3s;
+        }
+        .timeline-node:hover::before {
+            background: var(--neon-blue);
+            box-shadow: 0 0 10px var(--neon-blue);
+        }
+
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: var(--dark-bg); 
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #333; 
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: var(--neon-blue); 
+        }
+
+        .metric-circle {
+            transition: stroke-dashoffset 2s ease-in-out;
+        }
+    </style>
+</head>
+<body class="antialiased">
+
+    <!-- Background Grid -->
+    <div class="fixed inset-0 bg-grid z-[-1]"></div>
+
+    <!-- Floating Particles (Canvas) -->
+    <canvas id="particles" class="fixed inset-0 z-[-1] opacity-30"></canvas>
+
+    <!-- Navigation -->
+    <nav class="fixed top-0 w-full z-50 border-b border-gray-800 bg-black/80 backdrop-blur-md">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex items-center justify-between h-16">
+                <div class="flex items-center">
+                    <span class="text-2xl font-bold text-white tech-font glitch" data-text="VISHNU.PH">VISHNU.PH</span>
+                </div>
+                <div class="hidden md:block">
+                    <div class="ml-10 flex items-baseline space-x-4">
+                        <a href="#vision" class="text-gray-300 hover:text-[#00f3ff] px-3 py-2 rounded-md text-sm font-medium transition-colors">Vision</a>
+                        <a href="#impact" class="text-gray-300 hover:text-[#00f3ff] px-3 py-2 rounded-md text-sm font-medium transition-colors">Impact</a>
+                        <a href="#origin" class="text-gray-300 hover:text-[#00f3ff] px-3 py-2 rounded-md text-sm font-medium transition-colors">The Origin</a>
+                        <a href="#experience" class="text-gray-300 hover:text-[#00f3ff] px-3 py-2 rounded-md text-sm font-medium transition-colors">Experience</a>
+                        <a href="#haris" class="bg-[#bc13fe] hover:bg-[#d54aff] text-white px-4 py-2 rounded-sm text-sm font-bold tech-font tracking-wider transition-all shadow-[0_0_10px_#bc13fe]">FOR HARIS & CO</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section id="vision" class="min-h-screen flex items-center justify-center relative overflow-hidden pt-16">
+        <div class="max-w-6xl mx-auto px-4 text-center relative z-10">
+            <div class="inline-block px-3 py-1 mb-4 border border-[#00f3ff] text-[#00f3ff] text-xs tracking-[0.2em] uppercase rounded-full bg-[#00f3ff10]">
+                System Online • Status: Ready to Deploy
+            </div>
+            <h1 class="text-6xl md:text-8xl font-black mb-6 leading-tight">
+                <span class="block text-white">SOCIAL MEDIA</span>
+                <span class="block text-transparent bg-clip-text bg-gradient-to-r from-[#00f3ff] to-[#bc13fe] glitch" data-text="STRATEGIST">STRATEGIST</span>
+            </h1>
+            <p class="text-xl md:text-2xl text-gray-400 max-w-3xl mx-auto mb-10 font-light">
+                Bridging <span class="text-[#00f3ff]">Data Analytics</span> with <span class="text-[#bc13fe]">Creative Storytelling</span>. 
+                Building high-conversion funnels for the modern digital landscape.
+            </p>
+            
+            <div class="flex flex-col md:flex-row justify-center gap-6">
+                <a href="https://www.linkedin.com/in/vishnu-p-h-07333a238" target="_blank" class="group relative px-8 py-4 bg-transparent border border-[#00f3ff] text-[#00f3ff] font-bold uppercase tracking-wider hover:bg-[#00f3ff] hover:text-black transition-all duration-300">
+                    <span class="absolute inset-0 w-full h-full bg-[#00f3ff] transform scale-x-0 group-hover:scale-x-100 transition-transform origin-left z-[-1]"></span>
+                    <i class="fab fa-linkedin mr-2"></i> Connect on LinkedIn
+                </a>
+                <a href="mailto:vishnuputhige@gmail.com" class="px-8 py-4 bg-white/5 border border-white/20 text-white hover:bg-white/10 transition-all uppercase tracking-wider font-bold">
+                    Initialize Contact
+                </a>
+            </div>
+
+            <!-- Stats Ticker -->
+            <div class="mt-20 grid grid-cols-2 md:grid-cols-4 gap-4 border-t border-white/10 pt-10">
+                <div>
+                    <h3 class="text-4xl font-bold text-[#00f3ff] tech-font">27%</h3>
+                    <p class="text-sm text-gray-400 uppercase tracking-widest">Conversion Rate</p>
+                </div>
+                <div>
+                    <h3 class="text-4xl font-bold text-white tech-font">₹1.5L</h3>
+                    <p class="text-sm text-gray-400 uppercase tracking-widest">Revenue in 24H</p>
+                </div>
+                <div>
+                    <h3 class="text-4xl font-bold text-[#bc13fe] tech-font">Daily</h3>
+                    <p class="text-sm text-gray-400 uppercase tracking-widest">Content Cycle</p>
+                </div>
+                <div>
+                    <h3 class="text-4xl font-bold text-white tech-font">BSc</h3>
+                    <p class="text-sm text-gray-400 uppercase tracking-widest">Data Analytics</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- The Origin Story (Interactive) -->
+    <section id="origin" class="py-20 bg-black/50 border-y border-white/5">
+        <div class="max-w-5xl mx-auto px-4">
+            <h2 class="text-4xl font-bold mb-12 tech-font flex items-center">
+                <span class="w-2 h-8 bg-[#bc13fe] mr-4"></span>
+                THE ORIGIN CODE
+            </h2>
+            
+            <div class="grid md:grid-cols-2 gap-12 items-center">
+                <div class="glass-card p-8 rounded-xl relative overflow-hidden group">
+                    <div class="absolute top-0 right-0 p-4 opacity-20 group-hover:opacity-100 transition-opacity">
+                        <i class="fas fa-bolt text-5xl text-yellow-400"></i>
+                    </div>
+                    <h3 class="text-2xl font-bold mb-2 text-[#bc13fe]">The Catalyst</h3>
+                    <p class="text-sm text-gray-400 mb-4 uppercase tracking-widest">Event: Rizwan Ahamed Workshop</p>
+                    <p class="text-lg leading-relaxed text-gray-300">
+                        I entered the workshop as a Computer Science student. I left as a Strategist. <br><br>
+                        Witnessing <strong class="text-white">Rizwan Ahamed (Co-founder, Haris & Co)</strong> decode the psychology of social selling was the moment my career architecture was rewritten. It wasn't just about posting; it was about *engineering* attention.
+                    </p>
+                </div>
+
+                <div class="space-y-6">
+                    <div class="flex items-center gap-4">
+                        <div class="w-12 h-12 rounded-full bg-[#00f3ff]/10 flex items-center justify-center border border-[#00f3ff]">
+                            <i class="fas fa-code text-[#00f3ff]"></i>
+                        </div>
+                        <div>
+                            <h4 class="font-bold text-white">Foundation</h4>
+                            <p class="text-gray-400 text-sm">BSc Computer Science & Data Analytics</p>
+                        </div>
+                    </div>
+                    <div class="w-0.5 h-8 bg-gray-800 ml-6"></div>
+                    <div class="flex items-center gap-4">
+                        <div class="w-12 h-12 rounded-full bg-[#bc13fe]/20 flex items-center justify-center border border-[#bc13fe] shadow-[0_0_15px_#bc13fe]">
+                            <i class="fas fa-lightbulb text-[#bc13fe]"></i>
+                        </div>
+                        <div>
+                            <h4 class="font-bold text-white neon-purple">The Shift</h4>
+                            <p class="text-gray-400 text-sm">The Workshop that changed everything</p>
+                        </div>
+                    </div>
+                    <div class="w-0.5 h-8 bg-gray-800 ml-6"></div>
+                    <div class="flex items-center gap-4">
+                        <div class="w-12 h-12 rounded-full bg-white/10 flex items-center justify-center border border-white">
+                            <i class="fas fa-rocket text-white"></i>
+                        </div>
+                        <div>
+                            <h4 class="font-bold text-white">Current State</h4>
+                            <p class="text-gray-400 text-sm">Generating Revenue & Leading Strategy</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Impact Case Study -->
+    <section id="impact" class="py-20 relative">
+        <div class="max-w-6xl mx-auto px-4">
+            <div class="flex flex-col md:flex-row justify-between items-end mb-12">
+                <div>
+                    <h2 class="text-4xl font-bold tech-font mb-2 text-white">MISSION: <span class="text-[#00f3ff]">EDUCATIONAL CAMPAIGN</span></h2>
+                    <p class="text-gray-400">Freelance Strategy & Execution</p>
+                </div>
+                <div class="text-[#00f3ff] border border-[#00f3ff] px-4 py-1 text-sm mt-4 md:mt-0">CASE STUDY #001</div>
+            </div>
+
+            <div class="grid md:grid-cols-3 gap-6">
+                <!-- Problem -->
+                <div class="glass-card p-6 rounded-lg border-t-4 border-red-500">
+                    <h3 class="text-xl font-bold mb-4 text-white">Diagnostic</h3>
+                    <p class="text-gray-400 mb-4">Initial State: Weekly posting schedule. Low engagement. Stagnant growth.</p>
+                    <div class="h-1 w-full bg-gray-800 rounded overflow-hidden">
+                        <div class="h-full bg-red-500 w-1/4"></div>
+                    </div>
+                    <p class="text-xs text-right mt-1 text-red-400">Efficiency: Low</p>
+                </div>
+
+                <!-- Solution -->
+                <div class="glass-card p-6 rounded-lg border-t-4 border-[#00f3ff]">
+                    <h3 class="text-xl font-bold mb-4 text-white">Algorithm Override</h3>
+                    <ul class="space-y-3 text-gray-300 text-sm">
+                        <li class="flex items-start"><i class="fas fa-check text-[#00f3ff] mt-1 mr-2"></i> <span>Shifted to <strong>Daily Posting</strong> Protocol</span></li>
+                        <li class="flex items-start"><i class="fas fa-check text-[#00f3ff] mt-1 mr-2"></i> <span>Restructured Course Curriculum</span></li>
+                        <li class="flex items-start"><i class="fas fa-check text-[#00f3ff] mt-1 mr-2"></i> <span>Implemented Webinar Funnel</span></li>
+                    </ul>
+                </div>
+
+                <!-- Result -->
+                <div class="glass-card p-6 rounded-lg border-t-4 border-[#bc13fe] relative overflow-hidden">
+                    <div class="absolute inset-0 bg-[#bc13fe] opacity-10 animate-pulse"></div>
+                    <h3 class="text-xl font-bold mb-4 text-white">The Payload</h3>
+                    
+                    <div class="flex justify-between items-end mb-2">
+                        <span class="text-gray-400 text-sm">Webinar Revenue</span>
+                        <span class="text-2xl font-bold text-[#bc13fe]">₹1.50 Lakhs</span>
+                    </div>
+                    <div class="flex justify-between items-end mb-2">
+                        <span class="text-gray-400 text-sm">Timeframe</span>
+                        <span class="text-white">24 Hours</span>
+                    </div>
+                    <div class="mt-4 p-3 bg-white/5 rounded border border-[#bc13fe]/30 text-center">
+                        <span class="block text-3xl font-black text-white">27%</span>
+                        <span class="text-xs uppercase tracking-widest text-[#bc13fe]">Conversion Rate</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Experience Timeline -->
+    <section id="experience" class="py-20 bg-black">
+        <div class="max-w-4xl mx-auto px-4">
+            <h2 class="text-4xl font-bold tech-font mb-12 text-center">PROFESSIONAL <span class="text-gray-600">LOGS</span></h2>
+            
+            <div class="border-l-2 border-gray-800 ml-4 space-y-12">
+                <!-- Job 1 -->
+                <div class="pl-8 relative timeline-node">
+                    <span class="absolute -left-[38px] top-1 text-xs text-[#00f3ff] bg-black px-1 border border-[#00f3ff]">PRESENT</span>
+                    <h3 class="text-2xl font-bold text-white">Studio Hue (Post Production)</h3>
+                    <p class="text-[#00f3ff] font-medium mb-2">Strategy & Growth</p>
+                    <p class="text-gray-400 text-sm mb-4">Driving business development through content marketing and client acquisition.</p>
+                    <div class="flex gap-2 flex-wrap">
+                        <span class="px-2 py-1 bg-gray-800 text-xs rounded text-gray-300">Ideation</span>
+                        <span class="px-2 py-1 bg-gray-800 text-xs rounded text-gray-300">Networking</span>
+                    </div>
+                </div>
+
+                <!-- Job 2 (MotionPlusReels) -->
+                <div class="pl-8 relative timeline-node">
+                    <h3 class="text-2xl font-bold text-white">MotionPlusReels</h3>
+                    <p class="text-[#bc13fe] font-medium mb-2">Founder / Creative Lead</p>
+                    <p class="text-gray-400 text-sm mb-4">Founded a specialized mobile-first production team. We shoot professional weddings and events exclusively on iPhone, delivering high-quality cinematic content with agile setups.</p>
+                    <div class="flex gap-2 flex-wrap">
+                        <span class="px-2 py-1 bg-gray-800 text-xs rounded text-gray-300">Mobile Cinematography</span>
+                        <span class="px-2 py-1 bg-gray-800 text-xs rounded text-gray-300">Event Coverage</span>
+                        <span class="px-2 py-1 bg-gray-800 text-xs rounded text-gray-300">Team Management</span>
+                    </div>
+                </div>
+
+                <!-- Job 3 -->
+                <div class="pl-8 relative timeline-node">
+                    <h3 class="text-2xl font-bold text-white">Grand Kayarat Group</h3>
+                    <p class="text-gray-500 font-medium mb-2">Content Creator & Social Media Executive</p>
+                    <p class="text-gray-400 text-sm mb-4">Aug 2023 - Present. Hands-on content creation, event coverage, and reel editing.</p>
+                    <div class="flex gap-2 flex-wrap">
+                        <span class="px-2 py-1 bg-gray-800 text-xs rounded text-gray-300">CapCut Pro</span>
+                        <span class="px-2 py-1 bg-gray-800 text-xs rounded text-gray-300">Canva</span>
+                        <span class="px-2 py-1 bg-gray-800 text-xs rounded text-gray-300">Photography</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Skills Infographics -->
+    <section class="py-20 bg-gradient-to-b from-black to-[#05050a]">
+        <div class="max-w-6xl mx-auto px-4">
+            <h2 class="text-4xl font-bold tech-font mb-12 text-center">TECH & <span class="text-[#00f3ff]">TACTICS</span></h2>
+            
+            <div class="grid md:grid-cols-2 gap-12">
+                <!-- Tools Chart -->
+                <div class="glass-card p-6 rounded-xl">
+                    <h3 class="text-xl font-bold mb-6 text-center">The Arsenal</h3>
+                    <canvas id="skillsChart" height="250"></canvas>
+                </div>
+
+                <!-- Skill Bars -->
+                <div class="flex flex-col justify-center space-y-6">
+                    <div>
+                        <div class="flex justify-between mb-1">
+                            <span class="text-sm font-medium text-[#00f3ff]">Strategic Planning</span>
+                            <span class="text-sm font-medium text-gray-400">95%</span>
+                        </div>
+                        <div class="w-full bg-gray-800 rounded-full h-2.5">
+                            <div class="bg-[#00f3ff] h-2.5 rounded-full shadow-[0_0_10px_#00f3ff]" style="width: 95%"></div>
+                        </div>
+                    </div>
+                    <div>
+                        <div class="flex justify-between mb-1">
+                            <span class="text-sm font-medium text-[#bc13fe]">Data Analytics (BSc Background)</span>
+                            <span class="text-sm font-medium text-gray-400">85%</span>
+                        </div>
+                        <div class="w-full bg-gray-800 rounded-full h-2.5">
+                            <div class="bg-[#bc13fe] h-2.5 rounded-full shadow-[0_0_10px_#bc13fe]" style="width: 85%"></div>
+                        </div>
+                    </div>
+                    <div>
+                        <div class="flex justify-between mb-1">
+                            <span class="text-sm font-medium text-white">Video Editing (CapCut/VN)</span>
+                            <span class="text-sm font-medium text-gray-400">90%</span>
+                        </div>
+                        <div class="w-full bg-gray-800 rounded-full h-2.5">
+                            <div class="bg-white h-2.5 rounded-full" style="width: 90%"></div>
+                        </div>
+                    </div>
+                    <div>
+                        <div class="flex justify-between mb-1">
+                            <span class="text-sm font-medium text-yellow-400">Sales Conversion</span>
+                            <span class="text-sm font-medium text-gray-400">80%</span>
+                        </div>
+                        <div class="w-full bg-gray-800 rounded-full h-2.5">
+                            <div class="bg-yellow-400 h-2.5 rounded-full shadow-[0_0_10px_yellow]" style="width: 80%"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- The Haris & Co Pitch -->
+    <section id="haris" class="py-24 relative overflow-hidden">
+        <div class="absolute inset-0 bg-gradient-to-r from-[#bc13fe]/10 to-[#00f3ff]/10 z-[-1]"></div>
+        <div class="max-w-4xl mx-auto px-4 text-center">
+            <i class="fas fa-bullseye text-6xl text-white mb-6 animate-bounce"></i>
+            <h2 class="text-5xl font-black tech-font mb-6">WHY <span class="text-white">HARIS & CO?</span></h2>
+            
+            <div class="glass-card p-8 rounded-2xl text-left border border-white/10 mb-8">
+                <p class="text-lg text-gray-300 mb-6">
+                    My foundation was built on the principles I learned from <strong>Rizwan Ahamed</strong>. That one-day workshop didn't just teach me marketing; it gave me the blueprint I used to generate <strong class="text-[#00f3ff]">₹1.5L in a single day</strong> through strategic content.
+                </p>
+                <p class="text-lg text-gray-300 mb-6">
+                    From founding <strong>MotionPlusReels</strong> to driving results for freelance clients, I have applied these principles with relentless execution. I possess the analytical mind of a Data Science grad and the hustle of a creator who knows how to make things happen.
+                </p>
+                <div class="p-4 bg-white/5 border-l-4 border-[#bc13fe]">
+                    <p class="text-white italic">
+                        "I am a beginner in the grand scheme of things, and that is my greatest strength. I don't claim to know it all—I claim to be the hungriest person in the room. I am looking for an ecosystem where I can learn, grow, and sharpen my skills under the best in the industry."
+                    </p>
+                </div>
+            </div>
+            
+            <div class="mt-8">
+                <a href="mailto:vishnuputhige@gmail.com" class="inline-flex items-center justify-center px-10 py-4 border border-transparent text-lg font-bold rounded-sm text-black bg-white hover:bg-gray-200 transition-all uppercase tracking-widest shadow-[0_0_20px_rgba(255,255,255,0.4)]">
+                    Hire The Strategist
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="bg-black border-t border-gray-900 py-12 text-center">
+        <div class="flex justify-center space-x-8 mb-8">
+            <a href="https://www.linkedin.com/in/vishnu-p-h-07333a238" target="_blank" class="text-gray-400 hover:text-[#00f3ff] text-2xl" title="LinkedIn"><i class="fab fa-linkedin"></i></a>
+            <a href="mailto:vishnuputhige@gmail.com" class="text-gray-400 hover:text-white text-2xl" title="Email"><i class="fas fa-envelope"></i></a>
+            <a href="https://instagram.com/vishnoo__" target="_blank" class="text-gray-400 hover:text-[#bc13fe] text-2xl" title="Instagram"><i class="fab fa-instagram"></i></a>
+            <a href="https://wa.me/919847211280" target="_blank" class="text-gray-400 hover:text-green-400 text-2xl" title="WhatsApp"><i class="fab fa-whatsapp"></i></a>
+        </div>
+        <p class="text-gray-600 tech-font text-sm">
+            DESIGNED BY VISHNU P H <br>
+            <span class="text-xs opacity-50">System Ver 2.2.25 // Location: India</span>
+        </p>
+    </footer>
+
+    <script>
+        // Particle Animation Script
+        const canvas = document.getElementById('particles');
+        const ctx = canvas.getContext('2d');
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+
+        let particlesArray;
+
+        class Particle {
+            constructor() {
+                this.x = Math.random() * canvas.width;
+                this.y = Math.random() * canvas.height;
+                this.directionX = (Math.random() * 0.4) - 0.2;
+                this.directionY = (Math.random() * 0.4) - 0.2;
+                this.size = Math.random() * 2;
+                this.color = Math.random() > 0.5 ? '#00f3ff' : '#bc13fe';
+            }
+            update() {
+                if (this.x > canvas.width || this.x < 0) this.directionX = -this.directionX;
+                if (this.y > canvas.height || this.y < 0) this.directionY = -this.directionY;
+                this.x += this.directionX;
+                this.y += this.directionY;
+            }
+            draw() {
+                ctx.beginPath();
+                ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2, false);
+                ctx.fillStyle = this.color;
+                ctx.fill();
+            }
+        }
+
+        function init() {
+            particlesArray = [];
+            let numberOfParticles = (canvas.height * canvas.width) / 9000;
+            for (let i = 0; i < numberOfParticles; i++) {
+                particlesArray.push(new Particle());
+            }
+        }
+
+        function animate() {
+            requestAnimationFrame(animate);
+            ctx.clearRect(0, 0, innerWidth, innerHeight);
+            for (let i = 0; i < particlesArray.length; i++) {
+                particlesArray[i].update();
+                particlesArray[i].draw();
+            }
+        }
+
+        window.addEventListener('resize', function() {
+            canvas.width = innerWidth;
+            canvas.height = innerHeight;
+            init();
+        });
+
+        init();
+        animate();
+
+        // Charts
+        const ctxChart = document.getElementById('skillsChart').getContext('2d');
+        const skillsChart = new Chart(ctxChart, {
+            type: 'radar',
+            data: {
+                labels: ['Content Strategy', 'CapCut Pro', 'Sales Funnels', 'Canva Design', 'Data Analytics', 'Communication'],
+                datasets: [{
+                    label: 'Skill Proficiency',
+                    data: [95, 90, 85, 90, 80, 88],
+                    backgroundColor: 'rgba(0, 243, 255, 0.2)',
+                    borderColor: '#00f3ff',
+                    pointBackgroundColor: '#bc13fe',
+                    pointBorderColor: '#fff',
+                    pointHoverBackgroundColor: '#fff',
+                    pointHoverBorderColor: '#bc13fe'
+                }]
+            },
+            options: {
+                scales: {
+                    r: {
+                        min: 0,
+                        max: 100,
+                        angleLines: { color: 'rgba(255, 255, 255, 0.1)' },
+                        grid: { color: 'rgba(255, 255, 255, 0.1)' },
+                        pointLabels: { color: '#e0e0e0', font: { family: 'Rajdhani', size: 12 } },
+                        ticks: { 
+                            display: false,
+                            stepSize: 20
+                        }
+                    }
+                },
+                plugins: {
+                    legend: { display: false }
+                }
+            }
+        });
+    </script>
+</body>
+</html>
